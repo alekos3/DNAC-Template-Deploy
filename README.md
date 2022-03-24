@@ -1,7 +1,7 @@
 # DNAC-Deploy
 Deploy templates 
 
-This script allows you do deploy at scale by consuming the deploy API of DNAC. DNAC can deploy up to 100 devices per API call; On line 101 of the main.py you can set your group size. FYI The deploy API is rate limited to 100 calls per minute. So lets say we want to deploy 1000 devices if we set the group size to 100 then the script will make 10 API calls. DNAC does not wait for the deployement to be completed on each batch of devices so the script should run fairly quick.
+This script allows you to deploy at scale by consuming the deploy API of DNAC. DNAC can deploy up to 100 devices per API call; On line 101 of the main.py you can set your group size. FYI The deploy API is rate limited to 100 calls per minute. So lets say we want to deploy 1000 devices if we set the group size to 100 then the script will make 10 API calls. DNAC does not wait for the deployement to be completed on each batch of devices so the script should run fairly quick.
 
 
 
