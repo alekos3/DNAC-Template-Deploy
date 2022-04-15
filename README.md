@@ -36,3 +36,5 @@ This script allows you to deploy at scale by consuming the deploy API of DNAC. D
 ![result](https://user-images.githubusercontent.com/79263622/163648933-88290a88-bc3b-4da3-ad35-98e9b1463265.jpg)
 
 
+[![published](https://static.production.devnetcloud.com/codeexchange/assets/images/devnet-published.svg)](https://developer.cisco.com/codeexchange/github/repo/alekos3/DNAC-Deploy)
+
