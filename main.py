@@ -2,7 +2,6 @@
 # Alexios Nersessian
 
 from dnac import *
-from env import *
 
 
 ######################################
@@ -21,10 +20,16 @@ class bcolors:
 
 ######################################
 
-# get Auth token and save in environment variable
-env['token'] = getAuthToken(env)
 
-if __name__ == "__main__":
+if __name__ == "__main__":    
+    # get Auth token and save in environment variable
+    env = {}
+    # get Auth token and save in environment variable
+    env["base_url"] = input("DNAC URL: ")
+    env["username"] = input("Username: ")
+    env["password"] = input("Password: ")
+    env['token'] = getAuthToken(env)
+
     all_platforms = get_Dnac_Devices(env)
     platforms = []
     template_count = 0
