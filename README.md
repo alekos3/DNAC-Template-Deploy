@@ -13,6 +13,20 @@ This script allows you to deploy at scale by consuming the deploy API of DNAC. D
 ![dnaclogin](https://user-images.githubusercontent.com/79263622/163636037-d847fd9d-19b2-460c-bb51-6625c856dd9d.jpg)
 
 
-4) Select Platform to deploy on and hit Enter and confirm your choice. Platforms are numbered on the left starting from 0-X (e.g enter 3 and press enter).
-5) Select a Project name that houses templates. Projects are numbered on the left starting from 0-X (e.g enter 3 and press enter)
-6) Select a Template to deploy. Templates are numbered on the left starting from 0-X (e.g enter 3 and press enter). Confirm choice y/n.
+4) Select Platform to deploy on and hit Enter and confirm your choice. Platforms are numbered on the left starting from 0-X (e.g enter 3 and press enter). Confirm your choice y/n.
+
+
+![platforms](https://user-images.githubusercontent.com/79263622/163636214-6ef12286-5921-4d49-8db9-1321bef87b23.jpg)
+
+
+6) Select a Project name that houses templates. Projects are numbered on the left starting from 0-X (e.g enter 3 and press enter). Confirm your choice y/n.
+
+
+![project](https://user-images.githubusercontent.com/79263622/163638432-504d367a-be86-4386-b96e-2f0385574340.jpg)
+
+
+8) Select a Template to deploy. Templates are numbered on the left starting from 0-X (e.g enter 3 and press enter). Confirm choice y/n.
+
+
+![tempid](https://user-images.githubusercontent.com/79263622/163641564-47312877-2a93-4227-9fed-18623cecb618.jpg)
+
