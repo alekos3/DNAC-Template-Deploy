@@ -5,8 +5,11 @@ This script allows you to deploy at scale by consuming the deploy API of DNAC. D
 
 
 
-1) Open the env.py file first and populate it with all the information for your DNAC (url, creds, version).
-2) Run the main script from your IDE and a list of all available platforms to deploy on will be presented.
-3) Select Platform to deploy on and hit Enter and confirm your choice. Platforms are numbered on the left starting from 0-X (e.g enter 3 and press enter).
-4) Select a Project name that houses templates. Projects are numbered on the left starting from 0-X (e.g enter 3 and press enter)
-5) Select a Template to deploy. Templates are numbered on the left starting from 0-X (e.g enter 3 and press enter). Confirm choice y/n.
+1) Check Requirements.txt for library dependencies.
+2) Run the main.py script from terminal or your favorite ID. You will be prompted for the DNAC URL, username and password.
+   Look at screenshot below for correct format on URL.
+![dnaclogin](https://user-images.githubusercontent.com/79263622/163636037-d847fd9d-19b2-460c-bb51-6625c856dd9d.jpg)
+
+4) Select Platform to deploy on and hit Enter and confirm your choice. Platforms are numbered on the left starting from 0-X (e.g enter 3 and press enter).
+5) Select a Project name that houses templates. Projects are numbered on the left starting from 0-X (e.g enter 3 and press enter)
+6) Select a Template to deploy. Templates are numbered on the left starting from 0-X (e.g enter 3 and press enter). Confirm choice y/n.
