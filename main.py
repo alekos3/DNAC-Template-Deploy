@@ -21,7 +21,7 @@ class bcolors:
 ######################################
 
 
-if __name__ == "__main__":    
+if __name__ == "__main__":
     # get Auth token and save in environment variable
     env = {}
     # get Auth token and save in environment variable
@@ -36,7 +36,10 @@ if __name__ == "__main__":
     platform_Id = ''
     temp_select = -1
     count_plat = 0
+    group_size = 50  #  group size must be below 100.
 
+    print()
+    print()
     print("List of all Platform IDs available to deploy on")
 
     for i in range(len(all_platforms)):
@@ -46,7 +49,7 @@ if __name__ == "__main__":
             count_plat += 1
         else:
             continue
-
+    print()
     while True:
         try:
             platChoice = platforms[int(input("Please enter the platform you wish to deploy on:"))]
@@ -96,10 +99,10 @@ if __name__ == "__main__":
             template_count += 1
 
     print()
+    print()
 
     while select_project != 'q':
         print()
-
         try:
             temp_select = input(
                 f"{bcolors.OKGREEN}Please Select a template to deploy 0-{template_count - 1}{bcolors.ENDC}: ")
@@ -110,13 +113,12 @@ if __name__ == "__main__":
                     f"Are you sure you want to deploy {bcolors.WARNING}{template[convertSelection - 1]}{bcolors.ENDC}? y or n\nq to quit")
                 if yeorne == "y":
                     devices = get_Devices_By_Platform(env, platform_Id)
-                    group_size = 50  # group size must be below 100, 40-50 is recommended per API call.
                     groups = [devices[x:x + group_size] for x in
                               range(0, len(devices), group_size)]  # break down list to groups of X devices
 
                     for i in range(len(groups)):
                         print(groups[i])
-                        ###deploy_Template(env, template[convertSelection], groups[i])  # Template ID is the second parameter
+                        deploy_Template(env, template[convertSelection], groups[i])  # DEPLOY TEMPLATE
                     # print(template[convertSelection])
                     break
                 elif yeorne == 'q':
