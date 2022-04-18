@@ -6,7 +6,7 @@ This script allows you to deploy at scale by consuming the deploy API of DNAC. D
 
 
 1) Check Requirements.txt for library dependencies.
-2) Run the main.py script from terminal or your favorite ID. You will be prompted for the DNAC URL, username and password.
+2) Run the main.py script from terminal or your favorite IDE. You will be prompted for the DNAC URL, username and password.
    Look at screenshot below for correct format on URL.
 
 
