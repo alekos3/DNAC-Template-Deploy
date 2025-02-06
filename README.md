@@ -13,10 +13,8 @@ This script allows you to deploy at scale by consuming the deploy API of DNAC. D
 ![dnaclogin](https://user-images.githubusercontent.com/79263622/163636037-d847fd9d-19b2-460c-bb51-6625c856dd9d.jpg)
 
 
-4) Select Platform to deploy on and hit Enter and confirm your choice. Platforms are numbered on the left starting from 0-X (e.g enter 3 and press enter). Confirm your choice y/n.
+4) Enter Platform to deploy on exactly as it appears in DNAC GUI and hit Enter and confirm your choice OR just press Enter to deploy to all inventory in Catalyst Center (DNAC).
 
-
-![platforms](https://user-images.githubusercontent.com/79263622/163636214-6ef12286-5921-4d49-8db9-1321bef87b23.jpg)
 
 
 6) Select a Project name that houses templates. Projects are numbered on the left starting from 0-X (e.g enter 3 and press enter). Confirm your choice y/n.
@@ -30,10 +28,7 @@ This script allows you to deploy at scale by consuming the deploy API of DNAC. D
 
 ![tempid](https://user-images.githubusercontent.com/79263622/163641564-47312877-2a93-4227-9fed-18623cecb618.jpg)
 
-9) Results.
-
-
-![result](https://user-images.githubusercontent.com/79263622/163648933-88290a88-bc3b-4da3-ad35-98e9b1463265.jpg)
+9) Run check_status.py for detailed results.
 
 
 [![published](https://static.production.devnetcloud.com/codeexchange/assets/images/devnet-published.svg)](https://developer.cisco.com/codeexchange/github/repo/alekos3/DNAC-Deploy)
