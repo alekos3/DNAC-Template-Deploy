@@ -1,11 +1,19 @@
 #!/usr/bin/env python3
-# Alexios Nersessian
+__author__ = "Alexios Nersessian"
+__copyright__ = "Copyright 2025, Cisco"
+__email__ = "anersess@cisco.com"
+__version__ = "v2.0"
 
+import csv
+import getpass
+import os
+import re
+import urllib3
+
+urllib3.disable_warnings()
 from dnac import *
 
 
-######################################
-# SCRIPT
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -18,51 +26,82 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 
+def log_deploy_ids(deploy_ids):
+    if deploy_ids:  # Check for empty list
+        try:
+            with open('jobid.id', 'r') as read:
+                jobid = int(read.readline())
+
+        except FileNotFoundError:  # Creates jobid file and initializes it and creates deployids directory
+            os.mkdir('./deployids')
+            with open('jobid.id', 'w') as f:
+                f.write("1000")
+            with open('jobid.id', 'r') as read:
+                jobid = int(read.readline())
+
+        with open('jobid.id', 'w') as f:
+            jobid = jobid + 1
+            strid = str(jobid)
+            f.write(strid)
+        print()
+        print("Deploy ID file: ", f'deploy_ids_job{strid}.csv')
+
+        ids = f'./deployids/deploy_ids_job{strid}.csv'  # CSV to store deploy IDs
+        # Write Deployment ID(s) to file
+        with open(ids, 'a', newline='') as csvfile:
+            csvwriter = csv.writer(csvfile)
+            csvwriter.writerows(deploy_ids)
+
+
 ######################################
+def prepare_device_list_payload(device_list):
+    api_structured_dev_list = []
+
+    for item in device_list:
+        api_structured_dev_list.append({'hostName': item['hostname'],
+                                        'type': 'MANAGED_DEVICE_UUID',
+                                        'id': item['id']})  # structure the list to the format of targetInfo
+
+    return api_structured_dev_list
 
 
-if __name__ == "__main__":
+def extract_deploy_id_info(deploy_info):
+    # Extract non-applicable targets
+    non_applicable_match = re.search(r'nonApplicableTargets: \{(.+?)\}', deploy_info)
+    non_applicable_targets = []
+    if non_applicable_match:
+        non_applicable_list = non_applicable_match.group(1).split(', ')
+        for item in non_applicable_list:
+            device_id, _ = item.split('=')
+            non_applicable_targets.append(device_id)
+
+    return non_applicable_targets, deploy_info.split()[-1]
+
+
+def create_device_mapping(raw_devices):
+    uuid_to_hostname = {}
+
+    for device in raw_devices:
+        uuid_to_hostname[device["instanceUuid"]] = device["hostname"]
+
+    return uuid_to_hostname
+
+
+def main():
     # get Auth token and save in environment variable
     env = {}
     # get Auth token and save in environment variable
-    env["base_url"] = input("DNAC URL: ")
+    env["base_url"] = input("Enter Catalyst Center URL:  ").strip("/")
     env["username"] = input("Username: ")
-    env["password"] = input("Password: ")
-    env['token'] = getAuthToken(env)
+    env["password"] = getpass.getpass()
+    env['token'] = get_auth_token(env)
 
-    all_platforms = get_Dnac_Devices(env)
-    platforms = []
-    template_count = 0
-    platform_Id = ''
-    temp_select = -1
-    count_plat = 0
-    group_size = 50  #  group size must be below 100.
+    platform_choice = input("Enter a platform to deploy template to, or press enter for all inventory:  ")
 
-    print()
-    print()
-    print("List of all Platform IDs available to deploy on")
-
-    for i in range(len(all_platforms)):
-        if all_platforms[i]['platformId'] not in platforms:
-            platforms.append(all_platforms[i]['platformId'])
-            print(count_plat, '-', all_platforms[i]['platformId'])
-            count_plat += 1
-        else:
-            continue
-    print()
-    while True:
-        try:
-            platChoice = platforms[int(input("Please enter the platform you wish to deploy on:"))]
-            confPlat = input(f"Confirm Platform y/n {platChoice} ")
-            if confPlat == 'y':
-                platform_Id = {'platformId': platChoice}
-                break
-            elif confPlat == 'n':
-                continue
-            else:
-                print(f'{bcolors.FAIL}Bad choice!!!{bcolors.ENDC}')
-        except:
-            print(f"{bcolors.FAIL}\nNot a valid Choice!\n {bcolors.ENDC}")
+    raw_device_list = get_device_list(env, platform_choice)
+    uuid_to_name = create_device_mapping(raw_device_list)
+    device_list = prepare_device_list_payload(raw_device_list)
+    group_size = 40  # group size must be below 100.
 
     print()
     print()
@@ -83,7 +122,12 @@ if __name__ == "__main__":
             index = int(input(f'{bcolors.OKGREEN}Please select a project 0 - {count_proj - 1}:\n{bcolors.ENDC}'))
             select_project = projectList[index]
             yeorne = input(f"{bcolors.WARNING}Are you sure? y/n {select_project} {bcolors.ENDC}")
-            break
+            if yeorne.lower() == "y":
+                break
+            elif yeorne.lower() == 'q':
+                return
+            else:
+                continue
         except:
             print(f"{bcolors.FAIL}\nNot a valid Project name!\n {bcolors.ENDC}")
 
@@ -92,37 +136,28 @@ if __name__ == "__main__":
 
     # Select Template
     if select_project != 'q':
-        template = get_Template_ID(env, select_project)  # Get template ID
+        templates = get_template_id(env, select_project)  # Get template ID
 
-        for i in range(0, len(template), 2):
-            print(template_count, '-', template[i], "|  Template ID:", template[i + 1])
-            template_count += 1
+        for i in range(len(templates)):
+            print(i, '-', templates[i][0], "|  Template ID:", templates[i][1])
 
     print()
     print()
-
+    deploy_id_list = []
     while select_project != 'q':
         print()
         try:
-            temp_select = input(
-                f"{bcolors.OKGREEN}Please Select a template to deploy 0-{template_count - 1}{bcolors.ENDC}: ")
-            if int(temp_select) <= template_count and int(temp_select) >= 0:
-                convertSelection = int(temp_select) + int(
-                    temp_select) + 1  # Convert to proper index in list to pull correct ID
+            temp_select = int(input(
+                f"{bcolors.OKGREEN}Please Select a template to deploy 0-{len(templates) - 1}{bcolors.ENDC}: "))
+            if len(templates) >= temp_select >= 0:
+                template_id = templates[temp_select][1]
+                template_name = templates[temp_select][0]
                 yeorne = input(
-                    f"Are you sure you want to deploy {bcolors.WARNING}{template[convertSelection - 1]}{bcolors.ENDC}? y or n\nq to quit")
+                    f"Are you sure you want to deploy {bcolors.WARNING}{template_name}{bcolors.ENDC}? y or n\nq to quit:  ")
                 if yeorne == "y":
-                    devices = get_Devices_By_Platform(env, platform_Id)
-                    groups = [devices[x:x + group_size] for x in
-                              range(0, len(devices), group_size)]  # break down list to groups of X devices
-
-                    for i in range(len(groups)):
-                        print(groups[i])
-                        deploy_Template(env, template[convertSelection], groups[i])  # DEPLOY TEMPLATE
-                    # print(template[convertSelection])
                     break
                 elif yeorne == 'q':
-                    break
+                    return
                 else:
                     continue
             else:
@@ -131,3 +166,30 @@ if __name__ == "__main__":
         except:
             print(f'{bcolors.FAIL}Bad choice!!!{bcolors.ENDC}')
             continue
+
+    groups = [device_list[x:x + group_size] for x in
+              range(0, len(device_list), group_size)]  # break down list to groups of X devices
+
+    for i in range(len(groups)):
+        deploy_info = deploy_template(env, template_id, groups[i])  # DEPLOY TEMPLATE
+        non_applicable_targets, deploy_id = extract_deploy_id_info(deploy_info)
+        deploy_id_list.append([deploy_id])
+
+    log_deploy_ids(deploy_id_list)
+
+    if non_applicable_targets:
+        print("\n" + "=" * 80)
+        print(
+            f"Failed to Start Deployment Process for {len(non_applicable_targets)} devices, as they are non applicable.")
+        print("=" * 80)
+        for dev_id in non_applicable_targets:
+            print(uuid_to_name.get(dev_id))
+            print(uuid_to_name.get(dev_id))
+
+    print()
+    print("Deploy Job information has been saved. Please run check_status.py for detailed results.")
+    print("Done!")
+
+
+if __name__ == "__main__":
+    main()
