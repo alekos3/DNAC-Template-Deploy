@@ -184,7 +184,6 @@ def main():
         print("=" * 80)
         for dev_id in non_applicable_targets:
             print(uuid_to_name.get(dev_id))
-            print(uuid_to_name.get(dev_id))
 
     print()
     print("Deploy Job information has been saved. Please run check_status.py for detailed results.")
