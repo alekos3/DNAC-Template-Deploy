@@ -5,32 +5,26 @@ __email__ = "anersess@cisco.com"
 __version__ = "v2.0"
 import requests
 
+
 def get_auth_token(env):
-    """
-	Intent-based Authentication API call
-	The token obtained using this API is required to be set as value to the X-Auth-Token HTTP Header
-	for all API calls to Cisco DNA Center.
-	:param env:
-	:return: Token STRING
-	"""
-    url = '{}/dna/system/api/v1/auth/token'.format(env['base_url'])
+    url = "{}/dna/system/api/v1/auth/token".format(env["base_url"])
     # Make the POST Request
-    response = requests.post(url, auth=(env['username'], env['password']), verify=False)
+    response = requests.post(url, auth=(env["username"], env["password"]), verify=False)
 
     # Validate Response
-    if 'error' in response.text:
-        print('ERROR: Failed to retrieve Access Token!')
-        print('REASON: {}'.format(response.json()['error']))
+    if "error" in response.text:
+        print("ERROR: Failed to retrieve Access Token!")
+        print("REASON: {}".format(response.json()["error"]))
 
     else:
-        return response.json()['Token']  # return only the token
+        return response.json()["Token"]  # return only the token
 
 
 def get_device_list(env, platform_id=None):
     headers = {
-        'x-auth-token': env['token'],
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        "x-auth-token": env["token"],
+        "Content-Type": "application/json",
+        "Accept": "application/json"
     }
 
     device_list = []
@@ -44,15 +38,15 @@ def get_device_list(env, platform_id=None):
             url = f"{env['base_url']}/dna/intent/api/v1/network-device?&offset={offset}&limit={limit}"
         response = requests.get(url, headers=headers, verify=False)
 
-        if response.json().get('response'):
-            device_list.extend(response.json()['response'])
+        if response.json().get("response"):
+            device_list.extend(response.json()["response"])
             offset += limit
         else:
             break
     return device_list
 
 
-def get_Project_names(env):
+def get_project_names(env):
     url = "{}/dna/intent/api/v1/template-programmer/template".format(env["base_url"])
     headers = {
         "x-auth-token": env["token"],
@@ -62,8 +56,8 @@ def get_Project_names(env):
     project = []
 
     for line in response.json():
-        if line['projectName'] not in project:
-            project.append(line['projectName'])
+        if line["projectName"] not in project:
+            project.append(line["projectName"])
 
     return project
 
@@ -79,12 +73,11 @@ def get_template_id(env, project):
 
     for line in response.json():
         if project in str(line):  # Get template ID from desired project
-            templates.append((dict(line)['name'], dict(line)['templateId']))
+            templates.append((dict(line)["name"], dict(line)["templateId"]))
 
     return templates
 
 
-############BELOW IS THE DEPLOY TEMPLATE###########################
 def deploy_template(env, template_id, devices):
     url = f"{env['base_url']}/dna/intent/api/v1/template-programmer/template/deploy"
     headers = {
@@ -101,11 +94,10 @@ def deploy_template(env, template_id, devices):
     # Make POST request
     response = requests.post(url, headers=headers, json=payload, verify=False)
 
-    return response.json().get('deploymentId')
+    return response.json().get("deploymentId")
 
 
-
-def get_Task(env, task_id):
+def get_task(env, task_id):
     url = "{}/dna/intent/api/v1/task/{}".format(env["base_url"], task_id)
     headers = {
         "x-auth-token": env["token"],
@@ -131,12 +123,12 @@ def check_deployment_status(env, deployment_id):
 
 
 def get_device_info_by_id(env, dev_id):
-    url = f'{env["base_url"]}/dna/intent/api/v1/network-device/{dev_id}/'
+    url = f"{env['base_url']}/dna/intent/api/v1/network-device/{dev_id}/"
 
     headers = {
-        'x-auth-token': env['token'],
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        "x-auth-token": env["token"],
+        "Content-Type": "application/json",
+        "Accept": "application/json"
     }
     response = requests.request("GET", url, headers=headers, verify=False)
 
@@ -144,12 +136,12 @@ def get_device_info_by_id(env, dev_id):
 
 
 def create_tag(env, name):
-    url = f'{env["base_url"]}/dna/intent/api/v1/tag'
+    url = f"{env['base_url']}/dna/intent/api/v1/tag"
 
     headers = {
-        'x-auth-token': env['token'],
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        "x-auth-token": env["token"],
+        "Content-Type": "application/json",
+        "Accept": "application/json"
     }
 
     payload = {"name": name}
@@ -160,27 +152,27 @@ def create_tag(env, name):
 
 
 def get_tag_id(env, name):
-    url = f'{env["base_url"]}/dna/intent/api/v1/tag'
+    url = f"{env['base_url']}/dna/intent/api/v1/tag"
 
     headers = {
-        'x-auth-token': env['token'],
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        "x-auth-token": env["token"],
+        "Content-Type": "application/json",
+        "Accept": "application/json"
     }
 
-    params = {'name': name}
+    params = {"name": name}
     response = requests.request("GET", url, headers=headers, params=params, verify=False)
 
-    return response.json()['response'][0]['id']
+    return response.json()["response"][0]["id"]
 
 
 def tag_add_member(env, tag_id, members):
-    url = f'{env["base_url"]}/dna/intent/api/v1/tag/{tag_id}/member'
+    url = f"{env['base_url']}/dna/intent/api/v1/tag/{tag_id}/member"
 
     headers = {
-        'x-auth-token': env['token'],
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        "x-auth-token": env["token"],
+        "Content-Type": "application/json",
+        "Accept": "application/json"
     }
     payload = {"networkdevice": members}
     response = requests.request("POST", url, headers=headers, json=payload, verify=False)
@@ -190,16 +182,16 @@ def tag_add_member(env, tag_id, members):
 
 def get_device_id(env, name):
     dev_list = []
-    url = f'{env["base_url"]}/dna/intent/api/v1/device-detail'
+    url = f"{env['base_url']}/dna/intent/api/v1/device-detail"
     headers = {
-        'x-auth-token': env['token'],
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        "x-auth-token": env["token"],
+        "Content-Type": "application/json",
+        "Accept": 'application/json'
     }
 
     for device in name:
-        params = {'searchBy': device[0], 'identifier': 'nwDeviceName'}
+        params = {"searchBy": device[0], "identifier": "nwDeviceName"}
         dev = requests.get(url, headers=headers, params=params, verify=False)
-        dev_list.append(dev.json()['response']["nwDeviceId"])
+        dev_list.append(dev.json()["response"]["nwDeviceId"])
 
     return dev_list
