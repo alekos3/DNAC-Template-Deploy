@@ -8,6 +8,7 @@ import csv
 import getpass
 import os
 import re
+import time
 import urllib3
 
 urllib3.disable_warnings()
@@ -174,6 +175,7 @@ def main():
         deploy_info = deploy_template(env, template_id, groups[i])  # DEPLOY TEMPLATE
         non_applicable_targets, deploy_id = extract_deploy_id_info(deploy_info)
         deploy_id_list.append([deploy_id])
+        time.sleep(1)
 
     log_deploy_ids(deploy_id_list)
 
